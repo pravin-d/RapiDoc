@@ -40,6 +40,7 @@ export default class RapiDoc extends LitElement {
     this.showSummaryWhenCollapsed = true;
     this.isIntersectionObserverActive = true;
     this.intersectionObserver = new IntersectionObserver((entries) => { this.onIntersect(entries); }, intersectionObserverOptions);
+    this.extras = {};
   }
 
   static get properties() {
@@ -412,6 +413,28 @@ export default class RapiDoc extends LitElement {
     ];
   }
 
+  formatNavExtras(elementRoot) {
+    // Without error checks
+    const title = elementRoot.children.item(0).textContent;
+    const subUl = elementRoot.children.item(1);
+    const subItems = [];
+    for (const li of subUl.children) {
+      subItems.push({
+        label: li.textContent,
+        contentId: `extras--${li.dataset.contentId}`,
+        id: `nav-extras--${li.dataset.contentId}`,
+      });
+    }
+    return { title, id: `nav-extras-header-${(new Date()).getTime()}`, firstPathId: subItems[0]?.contentId, subItems };
+  }
+
+  formatExtras(elementRoot) {
+    return {
+      contentId: `extras--${elementRoot.dataset.contentId}`,
+      html: elementRoot.innerHTML,
+    };
+  }
+
   // Startup
   connectedCallback() {
     super.connectedCallback();
@@ -528,6 +551,12 @@ export default class RapiDoc extends LitElement {
       const elementId = window.location.hash.replace(regEx, '');
       this.scrollToPath(elementId);
     }, true);
+
+    // Support for extras
+    const extrasHeaders = Array.from(this.querySelector('template[slot="nav-extras"]').content.children).map(this.formatNavExtras);
+    this.extras.headers = extrasHeaders;
+    const extrasContents = Array.from(this.querySelector('template[slot="extras"]').content.children).map(this.formatExtras);
+    this.extras.contents = extrasContents;
   }
 
   // Cleanup

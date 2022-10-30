@@ -31,26 +31,51 @@
     https://cesdev.eng.sonicwall.com/api/q/openapi
 -->
 <rapi-doc 
-  spec-url = "./specs/temp.yaml" 
+  spec-url = "./specs/petstore.json" 
   id="thedoc" 
-  theme = "dark"
-  render-style="view" 
-  schema-style="table"
+  theme = "light"
+  render-style="focused" 
+  schema-style="tree"
   show-method-in-nav-bar = "true"
-  use-path-in-nav-bar = "true"
+  use-path-in-nav-bar = "false"
   show-components = "true"
   show-info = "true"
-  show-header = "true"
-  allow-search = "false"  
+  show-header = "false"
+  allow-search = "true"  
   allow-advanced-search = "true"
   allow-spec-url-load="false"
-  allow-spec-file-download="true"
+  allow-spec-file-load="false"
+  allow-spec-file-download="false"
   allow-server-selection = "true"
   allow-authentication	= "true"
   update-route="false"
   match-type="regex"
   persist-auth="true"
-></rapi-doc>
+  info-description-headings-in-navbar="true"
+>
+  <img id="logo" slot="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Igp3aWR0aD0iNDgiIGhlaWdodD0iNDgiCnZpZXdCb3g9IjAgMCA0OCA0OCIKc3R5bGU9IiBmaWxsOiMwMDAwMDA7Ij48ZyBpZD0ic3VyZmFjZTEiPjxwYXRoIHN0eWxlPSIgZmlsbDojRkYzRDAwOyIgZD0iTSA0My4xOTkyMTkgMzMuODk4NDM4IEMgNDIuODAwNzgxIDM2IDQxLjEwMTU2MyAzNy42MDE1NjMgMzkgMzcuODk4NDM4IEMgMzUuNjk5MjE5IDM4LjM5ODQzOCAzMC4xOTkyMTkgMzkgMjQgMzkgQyAxNy44OTg0MzggMzkgMTIuMzk4NDM4IDM4LjM5ODQzOCA5IDM3Ljg5ODQzOCBDIDYuODk4NDM4IDM3LjYwMTU2MyA1LjE5OTIxOSAzNiA0LjgwMDc4MSAzMy44OTg0MzggQyA0LjM5ODQzOCAzMS42MDE1NjMgNCAyOC4xOTkyMTkgNCAyNCBDIDQgMTkuODAwNzgxIDQuMzk4NDM4IDE2LjM5ODQzOCA0LjgwMDc4MSAxNC4xMDE1NjMgQyA1LjE5OTIxOSAxMiA2Ljg5ODQzOCAxMC4zOTg0MzggOSAxMC4xMDE1NjMgQyAxMi4zMDA3ODEgOS42MDE1NjMgMTcuODAwNzgxIDkgMjQgOSBDIDMwLjE5OTIxOSA5IDM1LjYwMTU2MyA5LjYwMTU2MyAzOSAxMC4xMDE1NjMgQyA0MS4xMDE1NjMgMTAuMzk4NDM4IDQyLjgwMDc4MSAxMiA0My4xOTkyMTkgMTQuMTAxNTYzIEMgNDMuNjAxNTYzIDE2LjM5ODQzOCA0NC4xMDE1NjMgMTkuODAwNzgxIDQ0LjEwMTU2MyAyNCBDIDQ0IDI4LjE5OTIxOSA0My42MDE1NjMgMzEuNjAxNTYzIDQzLjE5OTIxOSAzMy44OTg0MzggWiAiPjwvcGF0aD48cGF0aCBzdHlsZT0iIGZpbGw6I0ZGRkZGRjsiIGQ9Ik0gMjAgMzEgTCAyMCAxNyBMIDMyIDI0IFogIj48L3BhdGg+PC9nPjwvc3ZnPg==">
+  <template slot="nav-extras">
+    <ul>
+      <li data-header="Header">Header</li>
+      <ul>
+        <li data-content-id="testing">rters1</li>
+        <li data-content-id="testing1">rters2</li>  
+      </ul>
+    </ul>
+  </template>
+  <template slot="extras">
+    <template data-content-id="testing">
+      <section data-markdown="" style="height:200px">
+        content for testing 111
+      </section>  
+    </template>
+    <template data-content-id="testing1">
+      <section data-markdown="" style="height:200px">
+        content for testing 1
+      </section>
+    </template>
+  </template>
+</rapi-doc>
 <!--
   <rapi-doc-mini
     style= "width:600px; padding:0 10px"

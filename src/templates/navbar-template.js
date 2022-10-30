@@ -143,7 +143,42 @@ export default function navbarTemplate() {
         ? ''
         : html`<div class='nav-bar-info ${this.navActiveItemMarker}' id='link-auth' data-action='navigate' data-content-id='auth' tabindex='0' part='section-navbar-item section-navbar-auth'> Authentication </div>`
       }
+      ${
+        this.extras.headers
+        .map((tag) => html`
+          <div class='nav-bar-tag-and-paths ${(this.renderStyle === 'read' ? 'expanded' : (tag.expanded ? 'expanded' : 'collapsed'))}' >
+            <div 
+              class='nav-bar-tag ${this.navActiveItemMarker}'
+              part='section-navbar-item section-navbar-tag'
+              id='link-${tag.id}'
+              data-action='${(this.renderStyle === 'read' ? 'navigate' : this.onNavTagClick === 'show-description') ? 'navigate' : 'expand-collapse-tag'}'
+              data-content-id='${(this.renderStyle === 'read' ? `${tag.id}` : this.onNavTagClick === 'show-description') ? `${tag.id}` : ''}'
+              data-first-path-id='${tag.firstPathId}'
+              tabindex='0'
+            >
+              <div style="pointer-events:none;">${tag.title}</div>
+              <div class='nav-bar-tag-icon' tabindex='0' data-action='expand-collapse-tag'></div>
+            </div>
+            <div class='nav-bar-paths-under-tag' style='max-height:${(tag.expanded || this.renderStyle === 'read') ? ((tag.subItems?.length || 1) * 50) : 0}px;'>
+              <!-- Paths in each tag (endpoints) -->
+              ${tag.subItems.map((p) => html`
+              <div 
+                class='nav-bar-path ${this.navActiveItemMarker} ${this.usePathInNavBar === 'true' ? 'small-font' : ''}'
+                part='section-navbar-item section-navbar-path'
+                data-action='navigate'
+                data-content-id='${p.contentId}'
+                id='${p.id}'
+                tabindex='0'
+              >
+                <span style = 'display:flex; pointer-events: none; align-items:start; ${p.deprecated ? 'filter:opacity(0.5)' : ''}'>
+                  ${p.label}
+                </span>
+              </div>`)}
+            </div>
+          </div>
 
+        `)
+      }
       <div id='link-operations-top' class='nav-bar-section operations' data-action='navigate' data-content-id='${this.renderStyle === 'focused' ? '' : 'operations-top'}' part='section-navbar-item section-navbar-operations-top'>
         <div style='font-size:16px; display:flex; margin-left:10px;'>
           ${this.renderStyle === 'focused'
@@ -164,6 +199,53 @@ export default function navbarTemplate() {
         <div class='nav-bar-section-title'> OPERATIONS </div>
       </div>
 
+      ${this.resolvedSpec.tags
+        .map((tag) => html`
+          <div class='nav-bar-tag-and-paths ${(this.renderStyle === 'read' ? 'expanded' : (tag.expanded ? 'expanded' : 'collapsed'))}' >
+            <div 
+              class='nav-bar-tag ${this.navActiveItemMarker}'
+              part='section-navbar-item section-navbar-tag'
+              id='link-${tag.elementId}'
+              data-action='${(this.renderStyle === 'read' ? 'navigate' : this.onNavTagClick === 'show-description') ? 'navigate' : 'expand-collapse-tag'}'
+              data-content-id='${(this.renderStyle === 'read' ? `${tag.elementId}` : this.onNavTagClick === 'show-description') ? `${tag.elementId}` : ''}'
+              data-first-path-id='${tag.firstPathId}'
+              tabindex='0'
+            >
+              <div style="pointer-events:none;">${tag.name}</div>
+              <div class='nav-bar-tag-icon' tabindex='0' data-action='expand-collapse-tag'></div>
+            </div>
+            <div class='nav-bar-paths-under-tag' style='max-height:${(tag.expanded || this.renderStyle === 'read') ? ((tag.paths?.length || 1) * 50) : 0}px;'>
+              <!-- Paths in each tag (endpoints) -->
+              ${tag.paths.filter((v) => {
+                if (this.matchPaths) {
+                  return pathIsInSearch(this.matchPaths, v, this.matchType);
+                }
+                return true;
+              }).map((p) => html`
+              <div 
+                class='nav-bar-path ${this.navActiveItemMarker} ${this.usePathInNavBar === 'true' ? 'small-font' : ''}'
+                part='section-navbar-item section-navbar-path'
+                data-action='navigate'
+                data-content-id='${p.elementId}'
+                id='link-${p.elementId}'
+                tabindex='0'
+              >
+                <span style = 'display:flex; pointer-events: none; align-items:start; ${p.deprecated ? 'filter:opacity(0.5)' : ''}'>
+                  ${html`<span class='nav-method ${this.showMethodInNavBar} ${p.method}' style='pointer-events: none;'>
+                      ${this.showMethodInNavBar === 'as-colored-block' ? p.method.substring(0, 3).toUpperCase() : p.method.toUpperCase()}
+                    </span>`
+                  }
+                  ${p.isWebhook ? html`<span style='font-weight:bold; pointer-events: none; margin-right:8px; font-size: calc(var(--font-size-small) - 2px)'>WEBHOOK</span>` : ''}
+                  ${this.usePathInNavBar === 'true'
+                    ? html`<span style='pointer-events: none;' class='mono-font'>${p.path}</span>`
+                    : p.summary || p.shortSummary
+                  }
+                </span>
+              </div>`)}
+            </div>
+          </div>
+        `)
+      }
       <!-- TAGS AND PATHS-->
       ${this.resolvedSpec.tags
         .filter((tag) => tag.paths.filter((path) => pathIsInSearch(this.matchPaths, path, this.matchType)).length)

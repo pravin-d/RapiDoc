@@ -54,6 +54,14 @@ function focusedTagBodyTemplate(tag) {
   `;
 }
 
+function focusedExtrasBodyTemplate(tag) {
+  return html`
+    <section id="${tag.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me">
+      ${unsafeHTML(tag.html)}
+    </section>
+  `;
+}
+
 export default function focusedEndpointTemplate() {
   if (!this.focusedElementId || !this.resolvedSpec) {
     return;
@@ -81,6 +89,15 @@ export default function focusedEndpointTemplate() {
     selectedTagObj = this.resolvedSpec.tags.find((v) => v.elementId === idToFocus);
     if (selectedTagObj) {
       focusedTemplate = wrapFocusedTemplate.call(this, focusedTagBodyTemplate.call(this, selectedTagObj));
+    } else {
+      focusedTemplate = defaultContentTemplate.call(this);
+    }
+  } else if (focusElId.startsWith('extras--')) {
+    selectedTagObj = this.extras.contents.find((v) => v.contentId === focusElId);
+    if (selectedTagObj) {
+      const newNavEl = this.shadowRoot.getElementById(`nav-${focusElId}`);
+      expandCollapseNavBarTag(newNavEl, 'expand');
+      focusedTemplate = wrapFocusedTemplate.call(this, focusedExtrasBodyTemplate.call(this, selectedTagObj));
     } else {
       focusedTemplate = defaultContentTemplate.call(this);
     }
