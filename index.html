@@ -18,6 +18,7 @@
   });
 </script>
 
+
 <body>
 <!-- 
     Some sample spec to try
@@ -33,7 +34,7 @@
 <rapi-doc 
   spec-url = "./specs/petstore.json" 
   id="thedoc" 
-  theme = "light"
+  theme = "dark"
   render-style="focused" 
   schema-style="tree"
   show-method-in-nav-bar = "true"
@@ -66,12 +67,12 @@
   <template slot="extras">
     <template data-content-id="testing">
       <section data-markdown="" style="height:200px">
-        content for testing 111
+        <async-markdown src="specs/async-markdown-1.md"></async-markdown>
       </section>  
     </template>
     <template data-content-id="testing1">
       <section data-markdown="" style="height:200px">
-        content for testing 1
+        <async-markdown src="specs/async-markdown-2.md"></async-markdown>
       </section>
     </template>
   </template>

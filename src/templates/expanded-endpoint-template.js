@@ -7,6 +7,7 @@ import codeSamplesTemplate from '~/templates/code-samples-template';
 import callbackTemplate from '~/templates/callback-template';
 import '~/components/api-request';
 import '~/components/api-response';
+import '~/components/async-markdown';
 
 /* eslint-disable indent */
 function headingRenderer(tagElementId) {
