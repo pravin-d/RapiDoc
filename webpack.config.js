@@ -81,7 +81,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'rapidoc-min.js',
-    publicPath: '',
+    publicPath: '/',
   },
   optimization: {
     minimizer: [
@@ -94,6 +94,7 @@ module.exports = {
     ],
   },
   devServer: {
+    historyApiFallback: true,
     static: {
       directory: path.resolve(__dirname, 'docs'),
     },

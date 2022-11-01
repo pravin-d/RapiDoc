@@ -172,7 +172,7 @@ export function expandedEndpointBodyTemplate(path, tagName = '', tagDescription 
 export default function expandedEndpointTemplate() {
   if (!this.resolvedSpec) { return ''; }
   return html`
-  ${this.extras.contents.map((tag) => html`
+  ${this.extras.contents?.map((tag) => html`
     <section id="${tag.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
       ${unsafeHTML(tag.html)}
     </section>

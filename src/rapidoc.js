@@ -34,8 +34,8 @@ export default class RapiDoc extends LitElement {
     super();
     const intersectionObserverOptions = {
       root: this.getRootNode().host,
-      rootMargin: '-50px 0px -50px 0px', // when the element is visible 100px from bottom
-      threshold: 0,
+      rootMargin: '0px 0px 0px 0px', // when the element is visible 100px from bottom
+      threshold: [0.5, 1],
     };
     this.showSummaryWhenCollapsed = true;
     this.isIntersectionObserverActive = true;
@@ -51,6 +51,7 @@ export default class RapiDoc extends LitElement {
 
       // Spec
       updateRoute: { type: String, attribute: 'update-route' },
+      useUrlRoute: { type: String, attribute: 'use-url-route' },
       routePrefix: { type: String, attribute: 'route-prefix' },
       specUrl: { type: String, attribute: 'spec-url' },
       sortTags: { type: String, attribute: 'sort-tags' },
@@ -509,7 +510,8 @@ export default class RapiDoc extends LitElement {
 
     if (!this.oauthReceiver) { this.oauthReceiver = 'oauth-receiver.html'; }
     if (!this.updateRoute || !'true, false,'.includes(`${this.updateRoute},`)) { this.updateRoute = 'true'; }
-    if (!this.routePrefix) { this.routePrefix = '#'; }
+    if (!this.useUrlRoute || !'true, false,'.includes(`${this.useUrlRoute},`)) { this.useUrlRoute = 'true'; }
+    if (!this.routePrefix) { this.routePrefix = (this.useUrlRoute === 'false' || !this.useUrlRoute) ? '#' : '/'; }
     if (!this.sortTags || !'true, false,'.includes(`${this.sortTags},`)) { this.sortTags = 'false'; }
     if (!this.generateMissingTags || !'true, false,'.includes(`${this.generateMissingTags},`)) { this.generateMissingTags = 'false'; }
     if (!this.sortEndpointsBy || !'method, path, summary, none,'.includes(`${this.sortEndpointsBy},`)) { this.sortEndpointsBy = 'path'; }
@@ -553,10 +555,14 @@ export default class RapiDoc extends LitElement {
     }, true);
 
     // Support for extras
-    const extrasHeaders = Array.from(this.querySelector('template[slot="nav-extras"]').content.children).map(this.formatNavExtras);
-    this.extras.headers = extrasHeaders;
-    const extrasContents = Array.from(this.querySelector('template[slot="extras"]').content.children).map(this.formatExtras);
-    this.extras.contents = extrasContents;
+    if (this.querySelector('template[slot="nav-extras"]')) {
+      const extrasHeaders = Array.from(this.querySelector('template[slot="nav-extras"]').content.children).map(this.formatNavExtras);
+      this.extras.headers = extrasHeaders;
+    }
+    if (this.querySelector('template[slot="extras"]')) {
+      const extrasContents = Array.from(this.querySelector('template[slot="extras"]').content.children).map(this.formatExtras);
+      this.extras.contents = extrasContents;
+    }
   }
 
   // Cleanup
@@ -796,16 +802,19 @@ export default class RapiDoc extends LitElement {
 
     // Initiate IntersectionObserver and put it at the end of event loop, to allow loading all the child elements (must for larger specs)
     this.intersectionObserver.disconnect();
-    if (this.renderStyle === 'read') {
-      await sleep(100);
-      this.observeExpandedContent(); // This will auto-highlight the selected nav-item in read-mode
-    }
 
     // On first time Spec load, try to navigate to location hash if provided
-    const locationHash = window.location.hash?.substring(1);
-    if (locationHash) {
+    let location = '';
+    if (this.useUrlRoute === 'true') {
+      location = window.location.pathname;
+      if (location === '/') location = '';
+    } else {
+      location = window.location.hash?.substring(1);
+    }
+
+    if (location) {
       const regEx = new RegExp(`^${this.routePrefix}`, 'i');
-      const elementId = window.location.hash.replace(regEx, '');
+      const elementId = location.replace(regEx, '');
       if (this.renderStyle === 'view') {
         this.expandAndGotoOperation(elementId, true, true);
       } else {
@@ -814,9 +823,14 @@ export default class RapiDoc extends LitElement {
     } else if (this.renderStyle === 'focused') {
       // If goto-path is provided and no location-hash is present then try to scroll to default element
       if (!this.gotoPath) {
-        const defaultElementId = this.showInfo ? 'overview' : this.resolvedSpec.tags[0]?.paths[0];
+        const defaultElementId = this.showInfo === 'true' ? 'overview' : this.resolvedSpec.tags[0]?.paths[0]?.elementId;
         this.scrollToPath(defaultElementId);
       }
+    }
+
+    if (this.renderStyle === 'read') {
+      await sleep(100);
+      this.observeExpandedContent(); // This will auto-highlight the selected nav-item in read-mode
     }
   }
 
@@ -853,7 +867,11 @@ export default class RapiDoc extends LitElement {
         if (gotoEl) {
           gotoEl.scrollIntoView({ behavior: 'auto', block: 'start' });
           if (this.updateRoute === 'true') {
-            window.history.replaceState(null, null, `${this.routePrefix || '#'}${tmpElementId}`);
+            if (this.useUrlRoute === 'true') {
+              window.history.pushState(null, null, `/${tmpElementId}`);
+            } else {
+              window.history.pushState(null, null, `${this.routePrefix || '#'}${tmpElementId}`);
+            }
           }
         }
       }, isExpandingNeeded ? 150 : 0);
@@ -889,10 +907,18 @@ export default class RapiDoc extends LitElement {
         const oldNavEl = this.shadowRoot.querySelector('.nav-bar-tag.active, .nav-bar-path.active, .nav-bar-info.active, .nav-bar-h1.active, .nav-bar-h2.active, .operations.active');
         const newNavEl = this.shadowRoot.getElementById(`link-${entry.target.id}`);
 
+        if (oldNavEl === newNavEl) {
+          return;
+        }
+
         // Add active class in the new element
         if (newNavEl) {
           if (this.updateRoute === 'true') {
-            window.history.replaceState(null, null, `${window.location.href.split('#')[0]}${this.routePrefix || '#'}${entry.target.id}`);
+            if (this.useUrlRoute === 'true') {
+              window.history.pushState(null, null, `${window.location.origin}${this.routePrefix || '/'}${entry.target.id}`);
+            } else {
+              window.history.pushState(null, null, `${window.location.href.split('#')[0]}${this.routePrefix || '#'}${entry.target.id}`);
+            }
           }
           newNavEl.scrollIntoView({ behavior: 'auto', block: 'center' });
           newNavEl.classList.add('active');
@@ -953,6 +979,7 @@ export default class RapiDoc extends LitElement {
 
   // Public Method (scrolls to a given path and highlights the left-nav selection)
   async scrollToPath(elementId, expandPath = true, scrollNavItemToView = true) {
+    this.isIntersectionObserverActive = false;
     if (this.renderStyle === 'focused') {
       // for focused mode update this.focusedElementId to update the rendering, else it wont find the needed html elements
       // focusedElementId will get validated in the template
@@ -985,7 +1012,11 @@ export default class RapiDoc extends LitElement {
 
         // Update Location Hash
         if (this.updateRoute === 'true') {
-          window.history.replaceState(null, null, `${this.routePrefix || '#'}${elementId}`);
+          if (this.useUrlRoute === 'true') {
+            window.history.pushState(null, null, `/${elementId}`);
+          } else {
+            window.history.pushState(null, null, `${this.routePrefix || '#'}${elementId}`);
+          }
         }
 
         // Update NavBar View and Styles
@@ -1008,6 +1039,7 @@ export default class RapiDoc extends LitElement {
         }
       }
     }
+    this.isIntersectionObserverActive = true;
   }
 
   // Public Method - to update security-scheme of type http
