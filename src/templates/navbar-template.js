@@ -167,7 +167,7 @@ export default function navbarTemplate() {
                 part='section-navbar-item section-navbar-path'
                 data-action='navigate'
                 data-content-id='${p.contentId}'
-                id='${p.id}'
+                id='link-${p.id}'
                 tabindex='0'
               >
                 <span style = 'display:flex; pointer-events: none; align-items:start; ${p.deprecated ? 'filter:opacity(0.5)' : ''}'>

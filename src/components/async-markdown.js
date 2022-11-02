@@ -15,12 +15,6 @@ export default class AsyncMarkdown extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-    this.name = 'World';
-    this.count = 0;
-  }
-
   connectedCallback() {
     super.connectedCallback();
     marked.setOptions({

@@ -98,7 +98,7 @@ export function expandedEndpointBodyTemplate(path, tagName = '', tagDescription 
             </div>
           `
         }
-        <slot name="${path.elementId}"></slot>`
+        `
       }
       ${path.description ? html`<div class="m-markdown"> ${unsafeHTML(marked(path.description))}</div>` : ''}
       ${pathSecurityTemplate.call(this, path.security)}
@@ -173,6 +173,12 @@ export default function expandedEndpointTemplate() {
   if (!this.resolvedSpec) { return ''; }
   return html`
   ${this.extras.contents?.map((tag) => html`
+    <section id="${tag.contentId}" part="section-tag" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
+      <div class="title tag" part="section-tag-title label-tag-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      <div class="regular-font-size">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </div>
+    </section>
     <section id="${tag.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
       ${unsafeHTML(tag.html)}
     </section>

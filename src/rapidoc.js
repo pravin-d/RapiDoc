@@ -423,7 +423,7 @@ export default class RapiDoc extends LitElement {
       subItems.push({
         label: li.textContent,
         contentId: `extras--${li.dataset.contentId}`,
-        id: `nav-extras--${li.dataset.contentId}`,
+        id: `extras--${li.dataset.contentId}`,
       });
     }
     return { title, id: `nav-extras-header-${(new Date()).getTime()}`, firstPathId: subItems[0]?.contentId, subItems };
