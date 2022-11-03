@@ -57,3 +57,5 @@ alert(message);
 ## Inline code
 
 This web site is using `markedjs/marked`.
+
+<br />

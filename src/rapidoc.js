@@ -40,7 +40,8 @@ export default class RapiDoc extends LitElement {
     this.showSummaryWhenCollapsed = true;
     this.isIntersectionObserverActive = true;
     this.intersectionObserver = new IntersectionObserver((entries) => { this.onIntersect(entries); }, intersectionObserverOptions);
-    this.extras = {};
+    this.extras = [];
+    this.extrasIds = new Set();
   }
 
   static get properties() {
@@ -414,26 +415,52 @@ export default class RapiDoc extends LitElement {
     ];
   }
 
-  formatNavExtras(elementRoot) {
+  updateExtrasNav(elementRoot) {
     // Without error checks
-    const title = elementRoot.children.item(0).textContent;
-    const subUl = elementRoot.children.item(1);
-    const subItems = [];
-    for (const li of subUl.children) {
-      subItems.push({
-        label: li.textContent,
-        contentId: `extras--${li.dataset.contentId}`,
-        id: `extras--${li.dataset.contentId}`,
-      });
+
+    const data = {
+      tag: elementRoot.children.item(0)?.dataset?.tag,
+      label: elementRoot.children.item(0).textContent,
+      title: elementRoot.children.item(0)?.dataset?.title,
+    };
+    const contentIds = new Set();
+    if (elementRoot.children.item(0)?.dataset?.contentId) {
+      data.contentId = elementRoot.children.item(0)?.dataset?.contentId;
+      data.firstPathId = data.contentId;
+      contentIds.add(data.contentId);
     }
-    return { title, id: `nav-extras-header-${(new Date()).getTime()}`, firstPathId: subItems[0]?.contentId, subItems };
+
+    if (elementRoot.childElementCount > 1) {
+      const { children } = elementRoot.children.item(1);
+      const subItems = [];
+      for (const li of children) {
+        const contentId = data.tag ? `${data.tag}/${li.dataset.contentId}` : li.dataset.contentId;
+        subItems.push({
+          label: li.textContent,
+          title: li.dataset.title,
+          contentId,
+        });
+        contentIds.add(contentId);
+        data.firstPathId = subItems[0].contentId;
+      }
+      data.subItems = subItems;
+    }
+    data.contentIds = contentIds;
+    this.extras.push(data);
   }
 
-  formatExtras(elementRoot) {
-    return {
-      contentId: `extras--${elementRoot.dataset.contentId}`,
-      html: elementRoot.innerHTML,
-    };
+  updateExtrasContent(elementRoot) {
+    const item = this.extras.find((it) => {
+      const contentId = it.subItems && it.tag ? `${it.tag}/${elementRoot.dataset.contentId}` : elementRoot.dataset.contentId;
+      return it.contentIds.has(contentId);
+    });
+    if (!item.contents) item.contents = [];
+    const contentId = item.subItems && item.tag ? `${item.tag}/${elementRoot.dataset.contentId}` : elementRoot.dataset.contentId;
+    item?.contents.push({
+      contentId,
+      content: elementRoot?.innerHTML,
+    });
+    this.extrasIds.add(contentId);
   }
 
   // Startup
@@ -555,13 +582,15 @@ export default class RapiDoc extends LitElement {
     }, true);
 
     // Support for extras
-    if (this.querySelector('template[slot="nav-extras"]')) {
-      const extrasHeaders = Array.from(this.querySelector('template[slot="nav-extras"]').content.children).map(this.formatNavExtras);
-      this.extras.headers = extrasHeaders;
+    if (this.querySelector('template[slot="extras-navs"]')) {
+      for (const element of this.querySelector('template[slot="extras-navs"]').content.children) {
+        this.updateExtrasNav(element);
+      }
     }
-    if (this.querySelector('template[slot="extras"]')) {
-      const extrasContents = Array.from(this.querySelector('template[slot="extras"]').content.children).map(this.formatExtras);
-      this.extras.contents = extrasContents;
+    if (this.querySelector('template[slot="extras-contents"]')) {
+      for (const element of this.querySelector('template[slot="extras-contents"]').content.children) {
+        this.updateExtrasContent(element);
+      }
     }
   }
 

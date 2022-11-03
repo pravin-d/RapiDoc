@@ -35,7 +35,7 @@
   spec-url = "/specs/petstore.json" 
   id="thedoc" 
   theme = "dark"
-  render-style="read" 
+  render-style="focused"
   schema-style="tree"
   show-method-in-nav-bar = "true"
   use-path-in-nav-bar = "false"
@@ -55,26 +55,27 @@
   persist-auth="true"
   info-description-headings-in-navbar="true"
 >
-  <img id="logo" slot="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Igp3aWR0aD0iNDgiIGhlaWdodD0iNDgiCnZpZXdCb3g9IjAgMCA0OCA0OCIKc3R5bGU9IiBmaWxsOiMwMDAwMDA7Ij48ZyBpZD0ic3VyZmFjZTEiPjxwYXRoIHN0eWxlPSIgZmlsbDojRkYzRDAwOyIgZD0iTSA0My4xOTkyMTkgMzMuODk4NDM4IEMgNDIuODAwNzgxIDM2IDQxLjEwMTU2MyAzNy42MDE1NjMgMzkgMzcuODk4NDM4IEMgMzUuNjk5MjE5IDM4LjM5ODQzOCAzMC4xOTkyMTkgMzkgMjQgMzkgQyAxNy44OTg0MzggMzkgMTIuMzk4NDM4IDM4LjM5ODQzOCA5IDM3Ljg5ODQzOCBDIDYuODk4NDM4IDM3LjYwMTU2MyA1LjE5OTIxOSAzNiA0LjgwMDc4MSAzMy44OTg0MzggQyA0LjM5ODQzOCAzMS42MDE1NjMgNCAyOC4xOTkyMTkgNCAyNCBDIDQgMTkuODAwNzgxIDQuMzk4NDM4IDE2LjM5ODQzOCA0LjgwMDc4MSAxNC4xMDE1NjMgQyA1LjE5OTIxOSAxMiA2Ljg5ODQzOCAxMC4zOTg0MzggOSAxMC4xMDE1NjMgQyAxMi4zMDA3ODEgOS42MDE1NjMgMTcuODAwNzgxIDkgMjQgOSBDIDMwLjE5OTIxOSA5IDM1LjYwMTU2MyA5LjYwMTU2MyAzOSAxMC4xMDE1NjMgQyA0MS4xMDE1NjMgMTAuMzk4NDM4IDQyLjgwMDc4MSAxMiA0My4xOTkyMTkgMTQuMTAxNTYzIEMgNDMuNjAxNTYzIDE2LjM5ODQzOCA0NC4xMDE1NjMgMTkuODAwNzgxIDQ0LjEwMTU2MyAyNCBDIDQ0IDI4LjE5OTIxOSA0My42MDE1NjMgMzEuNjAxNTYzIDQzLjE5OTIxOSAzMy44OTg0MzggWiAiPjwvcGF0aD48cGF0aCBzdHlsZT0iIGZpbGw6I0ZGRkZGRjsiIGQ9Ik0gMjAgMzEgTCAyMCAxNyBMIDMyIDI0IFogIj48L3BhdGg+PC9nPjwvc3ZnPg==">
-  <template slot="nav-extras">
+  <template slot="extras-navs">
     <ul>
-      <li data-header="Header">Header</li>
+      <li data-tag="getting-started" data-title="Getting Started!">Getting Started</li>
       <ul>
-        <li data-content-id="testing">rters1</li>
-        <li data-content-id="testing1">rters2</li>  
+        <li data-content-id="testing" data-title="Installation!">Installation</li>
+        <li data-content-id="testing1" data-title="Next Steps!">Next Steps</li>
       </ul>
     </ul>
+    <ul>
+      <li data-tag="getting-sdfdsf" data-content-id="testing2">Something else Started</li>
+    </ul>
   </template>
-  <template slot="extras">
+  <template slot="extras-contents">
     <template data-content-id="testing">
-      <section data-markdown="">
-        <async-markdown src="/specs/async-markdown-1.md"></async-markdown>
-      </section>  
+      <async-markdown src="/specs/async-markdown-1.md"></async-markdown>
     </template>
     <template data-content-id="testing1">
-      <section data-markdown="">
-        <async-markdown src="/specs/async-markdown-2.md"></async-markdown>
-      </section>
+      <async-markdown src="/specs/async-markdown-2.md"></async-markdown>
+    </template>
+    <template data-content-id="testing2">
+      <async-markdown src="/specs/async-markdown-1.md"></async-markdown>
     </template>
   </template>
 </rapi-doc>

@@ -169,20 +169,48 @@ export function expandedEndpointBodyTemplate(path, tagName = '', tagDescription 
   `;
 }
 
+export function expandedExtrasBodyTemplate(item, mainItem) {
+  if (!mainItem.contents || !item) {
+    return html``;
+  }
+  const contentItem = mainItem?.contents.find((it) => it.contentId === item.contentId);
+  return html`
+    ${this.renderStyle === 'read' ? html`<div class='divider' part="operation-divider"></div>` : ''}
+    <div class='expanded-endpoint-body observe-me' part="section-operation" id='${item.contentId}'>
+    ${(this.renderStyle === 'focused')
+        ? html`
+          <div class="tag-container" part="section-operation-tag">
+            <span class="upper" style="font-weight:bold; font-size:18px;"> ${item.title || item.label} </span>
+            <svg width="24" height="24" viewBox="0 0 24 24" stroke-width="2" fill="none" style="stroke:var(--primary-color); vertical-align:top;"
+                >
+              <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path><path d="M18 4v17"></path><path d="M15 18l3 3l3 -3"></path>
+            </svg>
+            <div style="max-height:0px; overflow:hidden; margin-top:16px; border:1px solid var(--border-color)">
+            </div>
+          </div>
+        `
+        : ''
+      }
+      ${contentItem?.content ? unsafeHTML(contentItem.content) : ''}
+      </div>
+    </div>
+  `;
+}
+
 export default function expandedEndpointTemplate() {
   if (!this.resolvedSpec) { return ''; }
   return html`
-  ${this.extras.contents?.map((tag) => html`
-    <section id="${tag.contentId}" part="section-tag" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
-      <div class="title tag" part="section-tag-title label-tag-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-      <div class="regular-font-size">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </div>
+  ${this.extras.map((item) => html`
+    <section id="${item.contentId || item.tag}" part="section-tag" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
+      <div class="title tag" part="section-tag-title label-tag-title">${item.title || item.label}</div>
+      <slot name="${item.tag}"></slot>
     </section>
-    <section id="${tag.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
-      ${unsafeHTML(tag.html)}
+    <section class="regular-font section-gap--read-mode" part="section-operations-in-tag">
+      ${item.subItems && item.subItems.length
+        ? item.subItems?.map((subItems) => expandedExtrasBodyTemplate.call(this, subItems, item))
+        : expandedExtrasBodyTemplate.call(this, item, item)}
     </section>
-  `)
+    `)
   }
   ${this.resolvedSpec.tags.map((tag) => html`
     <section id="${tag.elementId}" part="section-tag" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">

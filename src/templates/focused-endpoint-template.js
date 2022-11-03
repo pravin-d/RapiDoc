@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'; // eslint-disable-line import/extensions
 import { marked } from 'marked';
-import { expandedEndpointBodyTemplate } from '~/templates/expanded-endpoint-template';
+import { expandedEndpointBodyTemplate, expandedExtrasBodyTemplate } from '~/templates/expanded-endpoint-template';
 import '~/components/api-request';
 import '~/components/api-response';
 import componentsTemplate from '~/templates/components-template';
@@ -54,13 +54,14 @@ function focusedTagBodyTemplate(tag) {
   `;
 }
 
-function focusedExtrasBodyTemplate(tag) {
-  return html`
-    <section id="${tag.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me">
-      ${unsafeHTML(tag.html)}
-    </section>
-  `;
-}
+// function focusedExtrasBodyTemplate(mainItem, content) {
+//   return html`
+//     <h1 id="${mainItem.contentId}">${mainItem.title || mainItem.label}</h1>
+//     <section id="${content.contentId}" part="section-extras" class="regular-font section-gap--read-mode observe-me">
+//       ${unsafeHTML(content.content)}
+//     </section>
+//   `;
+// }
 
 export default function focusedEndpointTemplate() {
   if (!this.focusedElementId || !this.resolvedSpec) {
@@ -92,12 +93,13 @@ export default function focusedEndpointTemplate() {
     } else {
       focusedTemplate = defaultContentTemplate.call(this);
     }
-  } else if (focusElId.startsWith('extras--')) {
-    selectedTagObj = this.extras.contents.find((v) => v.contentId === focusElId);
+  } else if (this.extrasIds.has(focusElId)) {
+    selectedTagObj = this.extras.find((v) => v.contentIds.has(focusElId));
     if (selectedTagObj) {
-      const newNavEl = this.shadowRoot.getElementById(`nav-${focusElId}`);
+      const newNavEl = this.shadowRoot.getElementById(`link-${focusElId}`);
       expandCollapseNavBarTag(newNavEl, 'expand');
-      focusedTemplate = wrapFocusedTemplate.call(this, focusedExtrasBodyTemplate.call(this, selectedTagObj));
+      const subItem = selectedTagObj.subItems ? selectedTagObj.subItems.find((v) => v.contentId === focusElId) : selectedTagObj;
+      focusedTemplate = wrapFocusedTemplate.call(this, expandedExtrasBodyTemplate.call(this, subItem, selectedTagObj));
     } else {
       focusedTemplate = defaultContentTemplate.call(this);
     }

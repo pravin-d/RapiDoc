@@ -144,40 +144,57 @@ export default function navbarTemplate() {
         : html`<div class='nav-bar-info ${this.navActiveItemMarker}' id='link-auth' data-action='navigate' data-content-id='auth' tabindex='0' part='section-navbar-item section-navbar-auth'> Authentication </div>`
       }
       ${
-        this.extras.headers
-        .map((tag) => html`
-          <div class='nav-bar-tag-and-paths ${(this.renderStyle === 'read' ? 'expanded' : (tag.expanded ? 'expanded' : 'collapsed'))}' >
-            <div 
-              class='nav-bar-tag ${this.navActiveItemMarker}'
-              part='section-navbar-item section-navbar-tag'
-              id='link-${tag.id}'
-              data-action='${(this.renderStyle === 'read' ? 'navigate' : this.onNavTagClick === 'show-description') ? 'navigate' : 'expand-collapse-tag'}'
-              data-content-id='${(this.renderStyle === 'read' ? `${tag.id}` : this.onNavTagClick === 'show-description') ? `${tag.id}` : ''}'
-              data-first-path-id='${tag.firstPathId}'
-              tabindex='0'
-            >
-              <div style="pointer-events:none;">${tag.title}</div>
-              <div class='nav-bar-tag-icon' tabindex='0' data-action='expand-collapse-tag'></div>
-            </div>
-            <div class='nav-bar-paths-under-tag' style='max-height:${(tag.expanded || this.renderStyle === 'read') ? ((tag.subItems?.length || 1) * 50) : 0}px;'>
-              <!-- Paths in each tag (endpoints) -->
-              ${tag.subItems.map((p) => html`
-              <div 
-                class='nav-bar-path ${this.navActiveItemMarker} ${this.usePathInNavBar === 'true' ? 'small-font' : ''}'
-                part='section-navbar-item section-navbar-path'
+        this.extras
+        .map((item) => {
+          if (item.subItems?.length) {
+            return html`
+              <div class='nav-bar-tag-and-paths ${(this.renderStyle === 'read' ? 'expanded' : (item.expanded ? 'expanded' : 'collapsed'))}' >
+                <div
+                  class='nav-bar-tag ${this.navActiveItemMarker}'
+                  part='section-navbar-item section-navbar-tag'
+                  id='link-extras--${item.tag}'
+                  data-action='${(this.renderStyle === 'read' ? 'navigate' : this.onNavTagClick === 'show-description') ? 'navigate' : 'expand-collapse-tag'}'
+                  data-content-id='${(this.renderStyle === 'read' ? `${item.tag}` : this.onNavTagClick === 'show-description') ? `${item.tag}` : ''}'
+                  data-first-path-id='${item.firstPathId}'
+                  tabindex='0'
+                >
+                  <div style="pointer-events:none;">${item.label}</div>
+                  <div class='nav-bar-tag-icon' tabindex='0' data-action='expand-collapse-tag'></div>
+                </div>
+                <div class='nav-bar-paths-under-tag' style='max-height:${(item.expanded || this.renderStyle === 'read') ? ((item.subItems?.length || 1) * 50) : 0}px;'>
+                  <!-- Paths in each tag (endpoints) -->
+                  ${item.subItems.map((p) => html`
+                  <div
+                    class='nav-bar-path ${this.navActiveItemMarker} ${this.usePathInNavBar === 'true' ? 'small-font' : ''}'
+                    part='section-navbar-item section-navbar-path'
+                    data-action='navigate'
+                    data-content-id='${p.contentId}'
+                    id='link-${p.contentId}'
+                    tabindex='0'
+                  >
+                    <span style = 'display:flex; pointer-events: none; align-items:start;'>
+                      ${p.label}
+                    </span>
+                  </div>`)}
+                </div>
+              </div>
+            `;
+          }
+          return html`
+            <div class='nav-bar-tag-and-paths expanded' >
+              <div
+                class='nav-bar-tag ${this.navActiveItemMarker}'
+                part='section-navbar-item section-navbar-tag'
+                id='link-${item.contentId}'
                 data-action='navigate'
-                data-content-id='${p.contentId}'
-                id='link-${p.id}'
+                data-content-id=${item.contentId}
                 tabindex='0'
               >
-                <span style = 'display:flex; pointer-events: none; align-items:start; ${p.deprecated ? 'filter:opacity(0.5)' : ''}'>
-                  ${p.label}
-                </span>
-              </div>`)}
+                <div style="pointer-events:none;">${item.label}</div>
+              </div>
             </div>
-          </div>
-
-        `)
+          `;
+        })
       }
       <div id='link-operations-top' class='nav-bar-section operations' data-action='navigate' data-content-id='${this.renderStyle === 'focused' ? '' : 'operations-top'}' part='section-navbar-item section-navbar-operations-top'>
         <div style='font-size:16px; display:flex; margin-left:10px;'>
