@@ -152,7 +152,7 @@ export default function navbarTemplate() {
                 <div
                   class='nav-bar-tag ${this.navActiveItemMarker}'
                   part='section-navbar-item section-navbar-tag'
-                  id='link-extras--${item.tag}'
+                  id='link-${item.tag}'
                   data-action='${(this.renderStyle === 'read' ? 'navigate' : this.onNavTagClick === 'show-description') ? 'navigate' : 'expand-collapse-tag'}'
                   data-content-id='${(this.renderStyle === 'read' ? `${item.tag}` : this.onNavTagClick === 'show-description') ? `${item.tag}` : ''}'
                   data-first-path-id='${item.firstPathId}'

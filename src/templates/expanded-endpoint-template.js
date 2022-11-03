@@ -191,8 +191,10 @@ export function expandedExtrasBodyTemplate(item, mainItem) {
         `
         : ''
       }
-      ${contentItem?.content ? unsafeHTML(contentItem.content) : ''}
-      </div>
+      ${mainItem.subItems ? html`<h2><strong>${item.label}<strong></h2>` : ''}
+    </div>
+    <div>
+      ${contentItem && contentItem.content ? unsafeHTML(contentItem.content) : ''}
     </div>
   `;
 }
@@ -201,7 +203,8 @@ export default function expandedEndpointTemplate() {
   if (!this.resolvedSpec) { return ''; }
   return html`
   ${this.extras.map((item) => html`
-    <section id="${item.contentId || item.tag}" part="section-tag" class="regular-font section-gap--read-mode observe-me" style="border-top:1px solid var(--primary-color);">
+    <section id="${item.contentId || item.tag}" part="section-tag" class="regular-font section-gap--read-mode observe-me" 
+      style="border-top:1px solid var(--primary-color);margin-bottom:-24px;padding-top:38px;">
       <div class="title tag" part="section-tag-title label-tag-title">${item.title || item.label}</div>
       <slot name="${item.tag}"></slot>
     </section>

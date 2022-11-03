@@ -34,8 +34,8 @@ export default class RapiDoc extends LitElement {
     super();
     const intersectionObserverOptions = {
       root: this.getRootNode().host,
-      rootMargin: '0px 0px 0px 0px', // when the element is visible 100px from bottom
-      threshold: [0.5, 1],
+      rootMargin: '-25% 0px -25% 0px', // when the element is visible 100px from bottom
+      threshold: [0.5],
     };
     this.showSummaryWhenCollapsed = true;
     this.isIntersectionObserverActive = true;
@@ -858,7 +858,7 @@ export default class RapiDoc extends LitElement {
     }
 
     if (this.renderStyle === 'read') {
-      await sleep(100);
+      await sleep(10000);
       this.observeExpandedContent(); // This will auto-highlight the selected nav-item in read-mode
     }
   }

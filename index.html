@@ -34,7 +34,7 @@
 <rapi-doc 
   spec-url = "/specs/petstore.json" 
   id="thedoc" 
-  theme = "dark"
+  theme = "light"
   render-style="focused"
   schema-style="tree"
   show-method-in-nav-bar = "true"
@@ -54,27 +54,29 @@
   match-type="regex"
   persist-auth="true"
   info-description-headings-in-navbar="true"
+  primary-color="#F63C41"
+  nav-bg-color="#313538"
 >
   <template slot="extras-navs">
     <ul>
       <li data-tag="getting-started" data-title="Getting Started!">Getting Started</li>
       <ul>
-        <li data-content-id="testing" data-title="Installation!">Installation</li>
-        <li data-content-id="testing1" data-title="Next Steps!">Next Steps</li>
+        <li data-content-id="installation" data-title="Installation!">Installation</li>
+        <li data-content-id="next-steps" data-title="Next Steps!">Next Steps</li>
       </ul>
     </ul>
     <ul>
-      <li data-tag="getting-sdfdsf" data-content-id="testing2">Something else Started</li>
+      <li data-tag="getting-sdfdsf" data-content-id="something-else-started">Something else Started</li>
     </ul>
   </template>
   <template slot="extras-contents">
-    <template data-content-id="testing">
+    <template data-content-id="installation">
       <async-markdown src="/specs/async-markdown-1.md"></async-markdown>
     </template>
-    <template data-content-id="testing1">
+    <template data-content-id="next-steps">
       <async-markdown src="/specs/async-markdown-2.md"></async-markdown>
     </template>
-    <template data-content-id="testing2">
+    <template data-content-id="something-else-started">
       <async-markdown src="/specs/async-markdown-1.md"></async-markdown>
     </template>
   </template>

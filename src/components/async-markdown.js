@@ -32,6 +32,12 @@ export default class AsyncMarkdown extends LitElement {
       .then((r) => r.text())
       .then(async (data) => {
         this.markdownHtml = marked.parse(data);
+        const event = new CustomEvent('markdown-loaded', {
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        this.dispatchEvent(event);
       });
   }
 
