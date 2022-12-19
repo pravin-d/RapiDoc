@@ -1,0 +1,1134 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 15x2arhs9wdq2
+info:
+  title: 0xref
+  version: '1.0'
+  summary: 0xref APIs
+  description: 0xref API Endpoints
+  contact:
+    name: 0xref Support
+    email: support@0xref.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/users/{userId}':
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+        description: Id of an existing user.
+    get:
+      summary: Get User Info by User ID
+      tags: []
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+  /user:
+    post:
+      summary: Create New User
+      operationId: post-user
+      responses:
+        '200':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                New User Bob Fellow:
+                  value:
+                    id: 12
+                    firstName: Bob
+                    lastName: Fellow
+                    email: bob.fellow@gmail.com
+                    dateOfBirth: '1996-08-24'
+                    emailVerified: false
+                    createDate: '2020-11-18'
+        '400':
+          description: Missing Required Information
+        '409':
+          description: Email Already Taken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+              required:
+                - firstName
+                - lastName
+                - email
+                - dateOfBirth
+            examples:
+              Create User Bob Fellow:
+                value:
+                  firstName: Bob
+                  lastName: Fellow
+                  email: bob.fellow@gmail.com
+                  dateOfBirth: '1996-08-24'
+        description: Post the necessary fields for the API to create a new user.
+      description: Create a new user.
+  /v1/tezos/wallets:
+    get:
+      summary: Wallets list
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  chainName:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        walletAddress:
+                          type: string
+                        name:
+                          type: string
+                        id:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-wallets
+      description: Get all wallets from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/wallets/:id':
+    get:
+      summary: Wallets by id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  chainName:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        walletAddress:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-wallets-id
+      description: Get wallet information from the Tezos blockchain for a given wallet id
+      parameters: []
+    parameters: []
+  '/v1/tezos/wallets/:walletAddress':
+    get:
+      summary: Wallets by address
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  chainName:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        walletAddress:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-wallets-address
+      description: Get wallet information from the Tezos blockchain for a given wallet address
+      parameters: []
+    parameters: []
+  '/v1/tezos/wallets/:address/collections':
+    get:
+      summary: Collections for a given wallet
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  chainName:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        collection:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            collectionName:
+                              type: string
+                            logo:
+                              type: string
+                        tokens:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            nftTokenID:
+                              type: string
+                        totalTokensFromCollection:
+                          type: number
+                        assetValueOfCollection:
+                          type: number
+                  totalTokensAcrossCollections:
+                    type: number
+                  assetValueAcrossCollections:
+                    type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-address
+      description: Get all collections for an address from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: numberOfTokens
+          description: Number of tokens to fetch
+          required: true
+    parameters: []
+  '/v1/tezos/wallets/:address/collections/:collectionID':
+    get:
+      summary: Collection by id for a given wallet
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collection:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      collectionName:
+                        type: string
+                      logo:
+                        type: string
+                      collectionMetadata:
+                        type: string
+                  tokens:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        ipfsHash:
+                          type: string
+                        metadata:
+                          type: string
+                        nftTokenID:
+                          type: string
+                  totalTokensInCollection:
+                    type: number
+                  assetValueOfCollection:
+                    type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-address-collectionid
+      description: Get a specific collection for an address from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+        - schema:
+            type: number
+            minLength: 0
+            maxLength: 5
+            minimum: 0
+            maximum: 5
+          in: query
+          name: numberOfTokens
+          description: Number of tokens to fetch
+          required: true
+    parameters: []
+  '/v1/tezos/wallets/:walletID/collections/:collectionID/token/:tokenID':
+    get:
+      summary: Token by id for a given collection by id for a given wallet
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  ipfsHash:
+                    type: string
+                  metadata:
+                    type: string
+                  nftTokenID:
+                    type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-walletid-collectionid-tokenid
+      description: Get the details for a specific token from a specific collection for a specific wallet id from the Tezos blockchain
+      parameters: []
+    parameters: []
+  /v1/tezos/stats/wallets:
+    get:
+      summary: Wallet statistics
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  chainName:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        walletAddress:
+                          type: string
+                        walletName:
+                          type: string
+                        tokens:
+                          type: number
+                        editions:
+                          type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-stats-wallets
+      description: Get statistics of all wallets from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/stats/wallets/:walletID':
+    get:
+      summary: Wallet statistics by wallet id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  walletName:
+                    type: string
+                  walletAddress:
+                    type: string
+                  tokens:
+                    type: number
+                  editions:
+                    type: number
+                  purchases:
+                    type: number
+                  sales:
+                    type: number
+                  puchaseValue:
+                    type: number
+                  saleValue:
+                    type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-stats-wallet-walletid
+      description: 'Get the statistics for a specific wallet, specified by its wallet id from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  '/v1/tezos/stats/wallets/:walletAddress':
+    get:
+      summary: Wallet statistics by wallet address
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  walletName:
+                    type: string
+                  walletAddress:
+                    type: string
+                  tokens:
+                    type: number
+                  editions:
+                    type: number
+                  purchases:
+                    type: number
+                  sales:
+                    type: number
+                  puchaseValue:
+                    type: number
+                  saleValue:
+                    type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-stats-wallet-walletid
+      description: 'Get the statistics for a specific wallet, specified by its wallet address from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  /v1/tezos/collections:
+    get:
+      summary: Collection list
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        address:
+                          type: string
+                        logo:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections
+      description: Get all collections from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/stats/collections/:collectionID':
+    get:
+      summary: Collection details for a collection id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalTokens:
+                    type: number
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  address:
+                    type: string
+                  collectionMetadata:
+                    type: string
+                  tokensSold:
+                    type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-collectionid
+      description: 'Get the details for a specific collection, specified by its collection ID from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  '/v1/tezos/collections/:collectionID/tokens':
+    get:
+      summary: Tokens for a given collection id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        nftTokenID:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-tokens
+      description: Get all the tokens for a specific collection ID from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/stats/collections/:collectionID/tokens/:tokenID':
+    get:
+      summary: 'Tokens details by token id, for a given collection id'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  nftTokenID:
+                    type: string
+                  ipfsHash:
+                    type: string
+                  tokenMetadata:
+                    type: object
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-collectionid-tokenid
+      description: 'Get the details for a specific token, specified by its token ID from a specific collection from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  '/v1/tezos/collections/:collectionID/wallets':
+    get:
+      summary: Wallets for a given collection id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        address:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-collectionid-wallets
+      description: Get all wallets for a specific collection from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/stats/collections/:collectionID/wallets/:walletAddress':
+    get:
+      summary: Wallet details by address for a given collection
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  address:
+                    type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-collections-collectionid-wallets-walletAddress
+      description: 'Get the details for a specific wallet, specified by its wallet address for a specific collection from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  /v1/tezos/stats/collections:
+    get:
+      summary: Collection statistics
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        address:
+                          type: string
+                        totalTokens:
+                          type: number
+                        editions:
+                          type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-stats-collections
+      description: Get statistics of all collections from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/stats/collections/:collectionID - duplicate':
+    get:
+      summary: Collection statistics by collection id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  contractAddress:
+                    type: string
+                  name:
+                    type: string
+                  tokens:
+                    type: number
+                  editions:
+                    type: number
+                  sales:
+                    type: number
+                  saleValue:
+                    type: number
+                  nativeCurrency:
+                    type: string
+                  saleValueUSD:
+                    type: number
+                  numberOfHolders:
+                    type: number
+                  floorPrice:
+                    type: number
+                  floorPrice24:
+                    type: number
+                  royalty:
+                    type: number
+                  transactions:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      sales:
+                        type: number
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-stats-collections-collectionid
+      description: 'Get the statistics for a specific collection, specified by its collection id from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  /v1/tezos/tokens:
+    get:
+      summary: Tokens list
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        nftTokenID:
+                          type: string
+                        collectionID:
+                          type: number
+                        collectionAddress:
+                          type: string
+                        collectionName:
+                          type: string
+                        ipfsHash:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-tokens
+      description: Get all tokens from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/tokens/:tokenID':
+    get:
+      summary: Token details for a token id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  ipfsHash:
+                    type: string
+                  originContract:
+                    type: string
+                  collectionID:
+                    type: string
+                  collectionAddress:
+                    type: string
+                  collectionName:
+                    type: string
+                  tokenMetadata:
+                    type: object
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-tokens-tokenid
+      description: 'Get the details for a specific token, specified by its token ID from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  '/v1/tezos/tokens/:collectionAddress/:nftTokenID':
+    get:
+      summary: Token details for a NFT token id from a collection
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  ipfsHash:
+                    type: string
+                  originContract:
+                    type: string
+                  collectionID:
+                    type: string
+                  collectionAddress:
+                    type: string
+                  collectionName:
+                    type: string
+                  tokenMetadata:
+                    type: object
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-tokens-tokenid
+      description: 'Get the details for a specific token, specified by its NFT token ID from a specific collection from the Tezos blockchain'
+      parameters: []
+    parameters: []
+  '/v1/tezos/tokens/:tokenID/wallets':
+    get:
+      summary: Wallets list for a given token by id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 10
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        walletAddress:
+                          type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-tokens-tokenid-wallets
+      description: Get wallets list for a given token id from the Tezos blockchain
+      parameters:
+        - schema:
+            type: integer
+            maximum: 50
+          in: query
+          name: limit
+          description: The number of results to be fetched per call
+          required: true
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          in: query
+          name: offset
+          description: Parameter used to paginate results
+          required: true
+    parameters: []
+  '/v1/tezos/tokens/:tokenID/wallets/:walletAddress':
+    get:
+      summary: Wallet details by address for a given token by id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  walletAddress:
+                    type: string
+        '400':
+          description: Bad Request
+      operationId: get-v1-tezos-tokens-tokenid-wallets-walletAddress
+      description: 'Get the wallet details for a specific token, specified by its token ID from the Tezos blockchain'
+      parameters: []
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

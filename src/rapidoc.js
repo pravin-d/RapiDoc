@@ -34,8 +34,8 @@ export default class RapiDoc extends LitElement {
     super();
     const intersectionObserverOptions = {
       root: this.getRootNode().host,
-      rootMargin: '-25% 0px -25% 0px', // when the element is visible 100px from bottom
-      threshold: [0.5],
+      rootMargin: '-10% 0px -40% 0px', // when the element is visible 100px from bottom
+      threshold: [0, 0.25, 0.5, 0.75, 1],
     };
     this.showSummaryWhenCollapsed = true;
     this.isIntersectionObserverActive = true;
